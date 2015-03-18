@@ -7,7 +7,6 @@ require "pry"
 require "support/fake_connection"
 
 
-
 # Sample class used by tests
 
 SetBuilder::ValueMap.register(:school, [[1, "Concordia"], [2, "McKendree"]])
@@ -50,19 +49,17 @@ class Friend
   
   
   # Stubs so that Arel can SQL
-  
-  attr_accessor :connection_pool
-  
-  def initialize
-    @connection_pool = Fake::ConnectionPool.new
+  class << self
+    attr_accessor :connection_pool
+    
+    def connection
+      connection_pool.connection
+    end
   end
-  
-  def connection
-    connection_pool.connection
-  end
+  @connection_pool = Fake::ConnectionPool.new
   
   
   
 end
 
-Arel::Table.engine = Arel::Sql::Engine.new(Friend.new)
+Arel::Table.engine = Friend # Arel::Sql::Engine.new(Friend.new)
